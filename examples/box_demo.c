@@ -13,6 +13,9 @@
    (at your option) any later version.
   ---------------------------------------------------------------------------------------------------------------------------------------------------
 */
+
+#include <rtthread.h>
+#include <stdlib.h>
 #include "mcurses.h"
 
 #define         myitoa(x,buf)                   itoa ((x), buf, 10)
@@ -48,23 +51,12 @@ void drawbox (uint8_t y, uint8_t x, uint8_t h, uint8_t w)
 }
 
 
-void Arduino_putchar(uint8_t c)
+int mcurses_box_demo(int argc, char const *argv[])
 {
-  Serial.write(c);
-}
-
-void setup()
-{
-  Serial.begin(115200);
-
-  setFunction_putchar(Arduino_putchar); // tell the library which output channel shall be used
+  setFunction_putchar(rtt_putchar); // tell the library which output channel shall be used
 
   initscr();                  // initialize mcurses
 
-}
-
-void loop()
-{
   char    buf[10];
   uint8_t idx;
   clear ();
@@ -72,10 +64,14 @@ void loop()
 
   for (idx = 1; idx <= 6; idx++)
   {
-    mvaddstr_P (idx + 7, 23, PSTR("This is line "));
+    mvaddstr_P (idx + 7, 23, "This is line ");
     addstr (myitoa(idx, buf));
-    delay (400);
+    rt_thread_mdelay(400);
   }
-  delay (1000);
+  rt_thread_mdelay(1000);
+  move(0, 0);
   clear ();
+
+  return 0;
 }
+MSH_CMD_EXPORT(mcurses_box_demo, screen demo)

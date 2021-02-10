@@ -13,44 +13,13 @@
  * (at your option) any later version.
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
+#include <rtthread.h>
+#include <stdlib.h>
 #include "mcurses.h"
 
 #define         myitoa(x,buf)                   itoa ((x), buf, 10)
 
 static uint8_t  fast;
-
-void show_top_line_P (const char * str)
-{
-  int     col;
-
-  move (1, 0);
-  attrset (A_BOLD | F_WHITE | B_BLUE);
-
-  for (col = 0; col < COLS; col++)
-  {
-    addch (' ');
-  }
-
-  mvaddstr_P (1, 2, str);
-  attrset (A_NORMAL);
-}
-
-void show_bottom_line_P (const char * str)
-{
-  uint8_t col;
-
-  move (LINES - 3, 0);
-  attrset (A_BOLD | F_WHITE | B_BLUE);
-
-  for (col = 0; col < COLS; col++)
-  {
-    addch (' ');
-  }
-
-  mvaddstr_P (LINES - 3, 2, str);
-  attrset (A_NORMAL);
-}
-
 
 void message_P (const char * msg)
 {
@@ -69,7 +38,7 @@ void shift_left (uint8_t y, uint8_t x, uint8_t ch)
 
   for (col = COLS - 2; col > x; col--)
   {
-    delay (5);
+    rt_thread_mdelay(5);
     delch ();
   }
 }
@@ -96,7 +65,7 @@ void shift_left_str (uint8_t y, uint8_t x, char * str)
   for (s = str; *s; s++)
   {
     addch (*s);
-    delay (25);
+    rt_thread_mdelay(25);
   }
 
   move (y, x);
@@ -105,7 +74,7 @@ void shift_left_str (uint8_t y, uint8_t x, char * str)
   for (s = str; *s; s++)
   {
     addch (*s);
-    delay (25);
+    rt_thread_mdelay(25);
   }
 }
 
@@ -117,13 +86,13 @@ void screen_demo ()
 
   clear ();
 
-  show_top_line_P (PSTR("TOP LINE 2"));
-  show_bottom_line_P (PSTR("BOTTOM LINE 22"));
+  show_top_line_P ("TOP LINE 2");
+  show_bottom_line_P ("BOTTOM LINE 22");
   setscrreg (2, LINES - 4);
 
   if (fast)
   {
-    mvaddstr_P (10, 20, PSTR("MCURSES LIB DEMO IN FAST MOTION"));
+    mvaddstr_P (10, 20, "MCURSES LIB DEMO IN FAST MOTION");
   }
   else
   {
@@ -133,36 +102,36 @@ void screen_demo ()
   for (line = 0; line < 5; line++)
   {
     scroll ();
-    delay (200);
+    rt_thread_mdelay(200);
   }
 
   move (5, 15);
   for (line = 0; line < 5; line++)
   {
     insertln ();
-    delay (200);
+    rt_thread_mdelay(200);
   }
 
   move (10, 18);
   for (col = 0; col < 5; col ++)
   {
     insch (' ');
-    delay (200);
+    rt_thread_mdelay(200);
   }
 
   move (10, 18);
   for (col = 0; col < 5; col ++)
   {
     delch ();
-    delay (200);
+    rt_thread_mdelay(200);
   }
 
   clear ();
 
-  show_top_line_P (PSTR("TOP LINE 2"));
-  show_bottom_line_P (PSTR("BOTTOM LINE 22"));
+  show_top_line_P ("TOP LINE 2");
+  show_bottom_line_P ("BOTTOM LINE 22");
 
-  message_P (PSTR("line positioning test"));
+  message_P ("line positioning test");
 
   for (line = 2; line <= LINES - 4; line++)
   {
@@ -170,60 +139,60 @@ void screen_demo ()
     addstr (myitoa (line + 1, buf));
   }
 
-  delay (700);
+  rt_thread_mdelay(700);
 
-  message_P (PSTR("BOLD attribute test"));
+  message_P ("BOLD attribute test");
   attrset (A_BOLD);
-  mvaddstr_P (10, 10, PSTR("BOLD"));
+  mvaddstr_P (10, 10, "BOLD");
   attrset (A_NORMAL);
-  delay (700);
+  rt_thread_mdelay(700);
 
-  message_P (PSTR("REVERSE attribute test"));
+  message_P ("REVERSE attribute test");
   attrset (A_REVERSE);
-  mvaddstr_P (11, 10, PSTR("REVERSE"));
+  mvaddstr_P (11, 10, "REVERSE");
   attrset (A_NORMAL);
-  delay (700);
+  rt_thread_mdelay(700);
 
-  message_P (PSTR("insert character test"));
+  message_P ("insert character test");
   for (col = 10; col <= 22; col += 2)
   {
     mvinsch (11, col, ' ');
   }
   move (11, col + 1);
-  delay (700);
+  rt_thread_mdelay(700);
 
-  message_P (PSTR("UNDERLINE attribute test"));
+  message_P ("UNDERLINE attribute test");
   attrset (A_UNDERLINE);
-  mvaddstr_P (12, 10, PSTR("UNDERLINE"));
+  mvaddstr_P (12, 10, "UNDERLINE");
   attrset (A_NORMAL);
-  delay (1000);
+  rt_thread_mdelay(1000);
 
-  message_P (PSTR("insert line test"));
+  message_P ("insert line test");
   move (11, 10);
   insertln ();
-  delay (1000);
+  rt_thread_mdelay(1000);
 
-  addstr_P (PSTR("Inserted line, will be deleted soon..."));
-  delay (1000);
+  addstr_P ("Inserted line, will be deleted soon...");
+  rt_thread_mdelay(1000);
 
-  message_P (PSTR("delete character test"));
+  message_P ("delete character test");
   for (col = 10; col <= 16; col += 1)
   {
     mvdelch (12, col);
   }
   move (12, 18);
-  delay (1000);
+  rt_thread_mdelay(1000);
 
-  message_P (PSTR("delete line test"));
+  message_P ("delete line test");
   move (11, 10);
   deleteln ();
-  delay (1000);
+  rt_thread_mdelay(1000);
 
-  message_P (PSTR("scroll up line test"));
+  message_P ("scroll up line test");
   for (line = 0; line < LINES - 4; line++)
   {
     scroll ();
-    delay (50);
+    rt_thread_mdelay(50);
   }
 
   move ( 8, 20); attrset (A_BOLD | F_BLACK   | B_WHITE); addstr ("BLACK");
@@ -245,40 +214,27 @@ void screen_demo ()
   move (14, 50); attrset (A_BOLD | B_CYAN    | F_WHITE); addstr ("CYAN");
   move (15, 50); attrset (A_BOLD | B_WHITE   | F_BLACK); addstr ("WHITE");
   move (16, 50); attrset (A_NORMAL); addstr ("normal");
-  delay (2000);
+  rt_thread_mdelay(2000);
 }
 
-
-void Arduino_putchar(uint8_t c)
+int mcurses_screen_demo(int argc, char const *argv[])
 {
-  Serial.write(c);
-}
+	  setFunction_putchar(rtt_putchar); // tell the library which output channel shall be used
 
-void setup()
-{
-  Serial.begin(115200);
-
-  setFunction_putchar(Arduino_putchar); // tell the library which output channel shall be used
-
-  initscr();                  // initialize mcurses
-
-}
-
-void loop()
-{
-  char    buf[10];
+	  initscr();                  // initialize mcurses
+	  char    buf[10];
   uint8_t idx;
 
   screen_demo ();
   clear ();
-  mvaddstr_P (10, 10, PSTR("Now the same in full speed... "));
+  mvaddstr_P (10, 10, "Now the same in full speed... ");
 
   for (idx = 3; idx > 0; idx--)
   {
     move (10, 40);
     myitoa(idx, buf);
     addstr (buf);
-    delay (1000);
+    rt_thread_mdelay(1000);
   }
 
   fast = 1;
@@ -286,6 +242,12 @@ void loop()
   clear ();
   fast = 0;
 
-  mvaddstr_P (10, 10, PSTR("Whoops, too fast? Repeat it... "));
-  delay (3000);
+  rt_thread_mdelay(3000);
+
+  move(0, 0);
+  clear ();
+
+	/* code */
+	return 0;
 }
+MSH_CMD_EXPORT(mcurses_screen_demo, screen demo)

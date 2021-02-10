@@ -13,41 +13,12 @@
  * (at your option) any later version.
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
+
+#include <rtthread.h>
+#include <stdlib.h>
 #include "mcurses.h"
 
 #define         myitoa(x,buf)                   itoa ((x), buf, 10)
-
-void show_top_line_P (const char * str)
-{
-  int     col;
-
-  move (1, 0);
-  attrset (A_BOLD | F_WHITE | B_BLUE);
-
-  for (col = 0; col < COLS; col++)
-  {
-    addch (' ');
-  }
-
-  mvaddstr_P (1, 2, str);
-  attrset (A_NORMAL);
-}
-
-void show_bottom_line_P (const char * str)
-{
-  uint8_t col;
-
-  move (LINES - 3, 0);
-  attrset (A_BOLD | F_WHITE | B_BLUE);
-
-  for (col = 0; col < COLS; col++)
-  {
-    addch (' ');
-  }
-
-  mvaddstr_P (LINES - 3, 2, str);
-  attrset (A_NORMAL);
-}
 
 void temperature ()
 {
@@ -60,8 +31,8 @@ void temperature ()
 
     curs_set (0);                                                       // set cursor invisible
     clear ();
-    show_top_line_P (PSTR("Temperatures in a disk storage"));
-    show_bottom_line_P (PSTR(""));
+    show_top_line_P ("Temperatures in a disk storage");
+    show_bottom_line_P ("");
 
 
     for (counter = 0; counter < 30; counter++)
@@ -94,17 +65,17 @@ void temperature ()
             addstr (": ");
             myitoa (temp[idx] + 20, buf);
             addstr (buf);
-            addch ('°');
+            addch ('C');
             attrset (A_NORMAL);
-	    attrset (B_BLACK);
+           attrset (B_BLACK);
 
             move (idx + 4, 20);
 
-            addch (ACS_LTEE);
+            addch ('|');
 
             for (t = 0; t < temp[idx]; t++)
             {
-                addch (ACS_HLINE);
+                addch ('#');
             }
 
             clrtoeol ();
@@ -126,31 +97,25 @@ void temperature ()
                 }
             }
         }
-        delay (100);
+        rt_thread_mdelay (100);
     }
 
     curs_set (1);                                                       // set cursor visible (normal)
 }
 
-
-void Arduino_putchar(uint8_t c)
+int mcurses_temperature_demo(int argc, char const *argv[])
 {
-  Serial.write(c);
-}
-
-void setup()
-{
-  Serial.begin(115200);
-
-  setFunction_putchar(Arduino_putchar); // tell the library which output channel shall be used
+  setFunction_putchar(rtt_putchar); // tell the library which output channel shall be used
 
   initscr();                  // initialize mcurses
 
-}
-
-void loop()
-{
   clear ();
   temperature();
-  delay (1000);
+  rt_thread_mdelay (3000);
+
+  move(0, 0);
+  clear ();
+
+  return 0;
 }
+MSH_CMD_EXPORT(mcurses_temperature_demo, screen demo)

@@ -8,24 +8,14 @@
   http://codegolf.stackexchange.com/questions/17285/make-the-matrix-digital-rain-using-the-shortest-amount-of-code
 
 ************************************************************************/
+
+#include <rtthread.h>
+#include <stdlib.h>
 #include "mcurses.h"
 
-void Arduino_putchar(uint8_t c)
-{
-  Serial.write(c);
-}
-
-void setup()
-{
-  Serial.begin(115200);
-
-  setFunction_putchar(Arduino_putchar); // tell the library which output channel shall be used
-
-  initscr();    // initialize mcurses
-  curs_set (0); // set cursor invisible
-}
-
 #define setLocation(x,y) move(y,x)
+
+int t[80];
 
 void sub_d(int p, int s, int x, int y)
 {
@@ -53,10 +43,14 @@ void sub_d(int p, int s, int x, int y)
   }
 }
 
-int t[80];
-
-void loop(void)
+int mcurses_matrix_rain(int argc, char const *argv[])
 {
+  setFunction_putchar(rtt_putchar); // tell the library which output channel shall be used
+
+  initscr();    // initialize mcurses
+  curs_set (0); // set cursor invisible
+  clear();
+  
   int i;
   int x;
   int y;
@@ -64,7 +58,7 @@ void loop(void)
 
   for (i = 0; i < 80; i++)
   {
-    t[i] = random(-50, 0);
+    t[i] = - random() % 50;
   }
 
   //sub_d(1,1,10,10);
@@ -72,7 +66,7 @@ void loop(void)
   {
     for (k = 1; k < 80; k++)
     {
-      i = random(0, 79);
+      i = rand() % 79;
       if (t[i] > 28)t[i] = 0;
       t[i] = t[i] + 1;
       y = t[i];
@@ -86,7 +80,10 @@ void loop(void)
     }
   }
 
+  return 0;
 }
+MSH_CMD_EXPORT(mcurses_matrix_rain, screen demo)
+
 
 /*
 QBASIC orginal code from:

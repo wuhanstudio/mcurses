@@ -13,6 +13,8 @@
  * (at your option) any later version.
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
+
+#include <rtthread.h>
 #include "mcurses.h"
 
 static uint8_t  hanoi_pole_height[3];
@@ -95,11 +97,11 @@ void hanoi_move_ring (uint8_t ring, uint8_t from_pole, uint8_t to_pole)
   {
     hanoi_erase_ring (ring, from_pole);
     move (3, 0);
-    delay (100);
+    rt_thread_mdelay (100);
     hanoi_pole_height[from_pole - 1]++;
     hanoi_draw_ring (ring, from_pole);
     move (3, 0);
-    delay (100);
+    rt_thread_mdelay (100);
     h--;
   }
 
@@ -108,7 +110,7 @@ void hanoi_move_ring (uint8_t ring, uint8_t from_pole, uint8_t to_pole)
     for (i = 0; i < 20 * (from_pole - to_pole); i++)
     {
       mvdelch (3, 0);
-      delay (25);
+      rt_thread_mdelay (25);
     }
   }
   else
@@ -116,7 +118,7 @@ void hanoi_move_ring (uint8_t ring, uint8_t from_pole, uint8_t to_pole)
     for (i = 0; i < 20 * (to_pole - from_pole); i++)
     {
       mvinsch (3, 0, ' ');
-      delay (25);
+      rt_thread_mdelay (25);
     }
   }
 
@@ -127,17 +129,17 @@ void hanoi_move_ring (uint8_t ring, uint8_t from_pole, uint8_t to_pole)
   {
     hanoi_draw_ring (ring, to_pole);
     move (3, 0);
-    delay (100);
+    rt_thread_mdelay (100);
     hanoi_erase_ring (ring, to_pole);
     move (3, 0);
-    delay (100);
+    rt_thread_mdelay (100);
     hanoi_pole_height[to_pole - 1]--;
     i--;
   }
 
   hanoi_draw_ring (ring, to_pole);
   move (3, 0);
-  delay (100);
+  rt_thread_mdelay (100);
 
   hanoi_pole_height[from_pole - 1] = height[from_pole - 1] - 1;
   hanoi_pole_height[to_pole   - 1] = height[to_pole   - 1] + 1;
@@ -200,23 +202,12 @@ void hanoi_draw_poles (void)
   }
 }
 
-void Arduino_putchar(uint8_t c)
+int mcurses_towers_of_hanoi(int argc, char const *argv[])
 {
-  Serial.write(c);
-}
-
-void setup()
-{
-  Serial.begin(115200);
-
-  setFunction_putchar(Arduino_putchar); // tell the library which output channel shall be used
+  setFunction_putchar(rtt_putchar); // tell the library which output channel shall be used
 
   initscr();                  // initialize mcurses
 
-}
-
-void loop()
-{
   clear ();
   hanoi_number_of_rings = 4;
   hanoi_pole_height[0] = 0;
@@ -225,5 +216,12 @@ void loop()
 
   hanoi_draw_poles ();
   hanoi (hanoi_number_of_rings, 1, 2, 3);
-  delay (1000);
+  rt_thread_mdelay (1000);
+
+  move(0, 0);
+  clear ();  
+  return 0;
 }
+MSH_CMD_EXPORT(mcurses_towers_of_hanoi, screen demo)
+
+
