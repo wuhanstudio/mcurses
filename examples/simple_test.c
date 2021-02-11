@@ -3,21 +3,20 @@
 
 int mcurses_simple_test(int argc, char const *argv[])
 {
+    setFunction_putchar(rtt_putchar);   // tell the library which output channel shall be used
 
-  setFunction_putchar(rtt_putchar); // tell the library which output channel shall be used
+    initscr();                          // initialize mcurses
 
-  initscr();                  // initialize mcurses
+    clear ();
 
-  clear ();
+    move (11, 15);                      // set cursor position
+    addstr ("Hello, World");            // show text
 
-  move (11, 15);              // set cursor position
-  addstr ("Hello, World");    // show text
+    rt_thread_mdelay(3000);
 
-  rt_thread_mdelay(3000);
+    move(0, 0);
+    clear ();
 
-  move(0, 0);
-  clear ();
-
-  return 0;
+    return 0;
 }
-MSH_CMD_EXPORT(mcurses_simple_test, screen demo)
+MSH_CMD_EXPORT(mcurses_simple_test, mcurses simple test demo)

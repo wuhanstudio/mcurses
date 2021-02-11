@@ -16,62 +16,62 @@
 
 #include <rtthread.h>
 #include <stdlib.h>
-#include "mcurses.h"
+#include <mcurses.h>
 
 #define         myitoa(x,buf)                   itoa ((x), buf, 10)
 
 void drawbox (uint8_t y, uint8_t x, uint8_t h, uint8_t w)
 {
-  uint8_t line;
-  uint8_t col;
+    uint8_t line;
+    uint8_t col;
 
-  move (y, x);
-  addch (ACS_ULCORNER);
-  for (col = 0; col < w - 2; col++)
-  {
-    addch (ACS_HLINE);
-  }
-  addch (ACS_URCORNER);
+    move (y, x);
+    addch (ACS_ULCORNER);
+    for (col = 0; col < w - 2; col++)
+    {
+        addch (ACS_HLINE);
+    }
+    addch (ACS_URCORNER);
 
-  for (line = 0; line < h - 2; line++)
-  {
-    move (line + y + 1, x);
-    addch (ACS_VLINE);
-    move (line + y + 1, x + w - 1);
-    addch (ACS_VLINE);
-  }
+    for (line = 0; line < h - 2; line++)
+    {
+        move (line + y + 1, x);
+        addch (ACS_VLINE);
+        move (line + y + 1, x + w - 1);
+        addch (ACS_VLINE);
+    }
 
-  move (y + h - 1, x);
-  addch (ACS_LLCORNER);
-  for (col = 0; col < w - 2; col++)
-  {
-    addch (ACS_HLINE);
-  }
-  addch (ACS_LRCORNER);
+    move (y + h - 1, x);
+    addch (ACS_LLCORNER);
+    for (col = 0; col < w - 2; col++)
+    {
+        addch (ACS_HLINE);
+    }
+    addch (ACS_LRCORNER);
 }
 
 
 int mcurses_box_demo(int argc, char const *argv[])
 {
-  setFunction_putchar(rtt_putchar); // tell the library which output channel shall be used
+    setFunction_putchar(rtt_putchar);   // tell the library which output channel shall be used
 
-  initscr();                  // initialize mcurses
+    initscr();                          // initialize mcurses
 
-  char    buf[10];
-  uint8_t idx;
-  clear ();
-  drawbox (6, 20, 10, 20);
+    char    buf[10];
+    uint8_t idx;
+    clear ();
+    drawbox (6, 20, 10, 20);
 
-  for (idx = 1; idx <= 6; idx++)
-  {
-    mvaddstr_P (idx + 7, 23, "This is line ");
-    addstr (myitoa(idx, buf));
-    rt_thread_mdelay(400);
-  }
-  rt_thread_mdelay(1000);
-  move(0, 0);
-  clear ();
+    for (idx = 1; idx <= 6; idx++)
+    {
+      mvaddstr_P (idx + 7, 23, "This is line ");
+      addstr (myitoa(idx, buf));
+      rt_thread_mdelay(400);
+    }
+    rt_thread_mdelay(1000);
+    move(0, 0);
+    clear ();
 
-  return 0;
+    return 0;
 }
-MSH_CMD_EXPORT(mcurses_box_demo, screen demo)
+MSH_CMD_EXPORT(mcurses_box_demo, mcurses box demo)

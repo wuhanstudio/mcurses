@@ -67,7 +67,7 @@ void temperature ()
             addstr (buf);
             addch ('C');
             attrset (A_NORMAL);
-           attrset (B_BLACK);
+            attrset (B_BLACK);
 
             move (idx + 4, 20);
 
@@ -100,22 +100,22 @@ void temperature ()
         rt_thread_mdelay (100);
     }
 
-    curs_set (1);                                                       // set cursor visible (normal)
+    curs_set (1);                       // set cursor visible (normal)
 }
 
 int mcurses_temperature_demo(int argc, char const *argv[])
 {
-  setFunction_putchar(rtt_putchar); // tell the library which output channel shall be used
+    setFunction_putchar(rtt_putchar);   // tell the library which output channel shall be used
 
-  initscr();                  // initialize mcurses
+    initscr();                          // initialize mcurses
 
-  clear ();
-  temperature();
-  rt_thread_mdelay (3000);
+    clear ();
+    temperature();
+    rt_thread_mdelay (3000);
 
-  move(0, 0);
-  clear ();
+    move(0, 0);
+    clear ();
 
-  return 0;
+    return 0;
 }
 MSH_CMD_EXPORT(mcurses_temperature_demo, screen demo)

@@ -18,37 +18,29 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __AVR__
-	#include <avr/pgmspace.h>
-#else
-	#define PROGMEM
-	#define PSTR(x)                                 (x)
-	#define pgm_read_byte(s)                        (*s)
-#endif 
-
 #include "mcurses.h"
 
-#define SEQ_CSI                                 PSTR("\033[")                   // code introducer
-#define SEQ_CLEAR                               PSTR("\033[2J")                 // clear screen
-#define SEQ_CLRTOBOT                            PSTR("\033[J")                  // clear to bottom
-#define SEQ_CLRTOEOL                            PSTR("\033[K")                  // clear to end of line
-#define SEQ_DELCH                               PSTR("\033[P")                  // delete character
-#define SEQ_NEXTLINE                            PSTR("\033E")                   // goto next line (scroll up at end of scrolling region)
-#define SEQ_INSERTLINE                          PSTR("\033[L")                  // insert line
-#define SEQ_DELETELINE                          PSTR("\033[M")                  // delete line
-#define SEQ_ATTRSET                             PSTR("\033[0")                  // set attributes, e.g. "\033[0;7;1m"
-#define SEQ_ATTRSET_REVERSE                     PSTR(";7")                      // reverse
-#define SEQ_ATTRSET_UNDERLINE                   PSTR(";4")                      // underline
-#define SEQ_ATTRSET_BLINK                       PSTR(";5")                      // blink
-#define SEQ_ATTRSET_BOLD                        PSTR(";1")                      // bold
-#define SEQ_ATTRSET_DIM                         PSTR(";2")                      // dim
-#define SEQ_ATTRSET_FCOLOR                      PSTR(";3")                      // forground color
-#define SEQ_ATTRSET_BCOLOR                      PSTR(";4")                      // background color
-#define SEQ_INSERT_MODE                         PSTR("\033[4h")                 // set insert mode
-#define SEQ_REPLACE_MODE                        PSTR("\033[4l")                 // set replace mode
-#define SEQ_RESET_SCRREG                        PSTR("\033[r")                  // reset scrolling region
-#define SEQ_LOAD_G1                             PSTR("\033)0")                  // load G1 character set
-#define SEQ_CURSOR_VIS                          PSTR("\033[?25")                // set cursor visible/not visible
+#define SEQ_CSI                                 ("\033[")                   // code introducer
+#define SEQ_CLEAR                               ("\033[2J")                 // clear screen
+#define SEQ_CLRTOBOT                            ("\033[J")                  // clear to bottom
+#define SEQ_CLRTOEOL                            ("\033[K")                  // clear to end of line
+#define SEQ_DELCH                               ("\033[P")                  // delete character
+#define SEQ_NEXTLINE                            ("\033E")                   // goto next line (scroll up at end of scrolling region)
+#define SEQ_INSERTLINE                          ("\033[L")                  // insert line
+#define SEQ_DELETELINE                          ("\033[M")                  // delete line
+#define SEQ_ATTRSET                             ("\033[0")                  // set attributes, e.g. "\033[0;7;1m"
+#define SEQ_ATTRSET_REVERSE                     (";7")                      // reverse
+#define SEQ_ATTRSET_UNDERLINE                   (";4")                      // underline
+#define SEQ_ATTRSET_BLINK                       (";5")                      // blink
+#define SEQ_ATTRSET_BOLD                        (";1")                      // bold
+#define SEQ_ATTRSET_DIM                         (";2")                      // dim
+#define SEQ_ATTRSET_FCOLOR                      (";3")                      // forground color
+#define SEQ_ATTRSET_BCOLOR                      (";4")                      // background color
+#define SEQ_INSERT_MODE                         ("\033[4h")                 // set insert mode
+#define SEQ_REPLACE_MODE                        ("\033[4l")                 // set replace mode
+#define SEQ_RESET_SCRREG                        ("\033[r")                  // reset scrolling region
+#define SEQ_LOAD_G1                             ("\033)0")                  // load G1 character set
+#define SEQ_CURSOR_VIS                          ("\033[?25")                // set cursor visible/not visible
 
 static uint_fast8_t                             mcurses_scrl_start = 0;         // start of scrolling region, default is 0
 static uint_fast8_t                             mcurses_scrl_end = LINES - 1;   // end of scrolling region, default is last line
@@ -64,12 +56,49 @@ static void                                     mcurses_puts_P (const char *);
 char (*FunctionPointer_getchar)(void);
 void  (*FunctionPointer_putchar)(uint_fast8_t ch);
 
+void rtt_putchar(uint_fast8_t c)
+{
+  rt_kprintf("%c", c);
+}
+
+void show_top_line_P (const char * str)
+{
+  int     col;
+
+  move (1, 0);
+  attrset (A_BOLD | F_WHITE | B_BLUE);
+
+  for (col = 0; col < COLS; col++)
+  {
+    addch (' ');
+  }
+
+  mvaddstr_P (1, 2, str);
+  attrset (A_NORMAL);
+}
+
+void show_bottom_line_P (const char * str)
+{
+  uint8_t col;
+
+  move (LINES - 3, 0);
+  attrset (A_BOLD | F_WHITE | B_BLUE);
+
+  for (col = 0; col < COLS; col++)
+  {
+    addch (' ');
+  }
+
+  mvaddstr_P (LINES - 3, 2, str);
+  attrset (A_NORMAL);
+}
+
 void setFunction_getchar(char (*functionPoitner)(void))
 {
 	FunctionPointer_getchar = functionPoitner;
 }
 
-void setFunction_putchar(void (*functionPoitner)(uint8_t ch))
+void setFunction_putchar(void (*functionPoitner)(uint_fast8_t ch))
 {
 	FunctionPointer_putchar = functionPoitner;
 }
