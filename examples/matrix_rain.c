@@ -19,70 +19,70 @@ int t[80];
 
 void sub_d(int p, int s, int x, int y)
 {
-  uint8_t r;
-  uint8_t g;
+    uint8_t r;
+    uint8_t g;
 
-  r = (p % 16) * 16;
-  g = 180 - p;
-  if (r < 10) attrset (F_BLACK); // forground color black
-  else
-  {
-    if (g > 170) attrset(F_WHITE);
-    else if (g > 169) attrset(F_GREEN );
-  }
+    r = (p % 16) * 16;
+    g = 180 - p;
+    if (r < 10) attrset (F_BLACK);  // forground color black
+    else
+    {
+        if (g > 170) attrset(F_WHITE);
+        else if (g > 169) attrset(F_GREEN );
+    }
 
-  if ((y >= 0) && (y < 24) && (x < 80))
-  {
-    int xx, yy;
-    xx = x;
-    yy = y;
-    setLocation(xx, yy);
-    char c;
-    c = 33 + (x * y) % 200;
-    addch(c);
-  }
+    if ((y >= 0) && (y < 24) && (x < 80))
+    {
+        int xx, yy;
+        xx = x;
+        yy = y;
+        setLocation(xx, yy);
+        char c;
+        c = 33 + (x * y) % 200;
+        addch(c);
+    }
 }
 
 int mcurses_matrix_rain(int argc, char const *argv[])
 {
-  setFunction_putchar(rtt_putchar); // tell the library which output channel shall be used
+    setFunction_putchar(rtt_putchar);   // tell the library which output channel shall be used
 
-  initscr();    // initialize mcurses
-  curs_set (0); // set cursor invisible
-  clear();
-  
-  int i;
-  int x;
-  int y;
-  int k;
+    initscr();      // initialize mcurses
+    curs_set (0);   // set cursor invisible
+    clear();
+    
+    int i;
+    int x;
+    int y;
+    int k;
 
-  for (i = 0; i < 80; i++)
-  {
-    t[i] = - random() % 50;
-  }
-
-  //sub_d(1,1,10,10);
-  while (1)
-  {
-    for (k = 1; k < 80; k++)
+    for (i = 0; i < 80; i++)
     {
-      i = rand() % 79;
-      if (t[i] > 28)t[i] = 0;
-      t[i] = t[i] + 1;
-      y = t[i];
-      sub_d( 0     , 0, i, y - 6);
-      sub_d( 2  + x, 0, i, y - 5  );
-      sub_d( 2  + x, 0, i, y - 4  );
-      sub_d( 10 + x, 0, i, y - 3 );
-      sub_d( 10 + x, 0, i, y - 2 );
-      sub_d( 11 + x, 0, i, y - 1 );
-      sub_d( 0     , 2 + x, i, y );
+        t[i] = - random() % 50;
     }
-  }
 
-  return 0;
+    //sub_d(1,1,10,10);
+    while (1)
+    {
+        for (k = 1; k < 80; k++)
+        {
+            i = rand() % 79;
+            if (t[i] > 28)t[i] = 0;
+            t[i] = t[i] + 1;
+            y = t[i];
+            sub_d( 0     , 0, i, y - 6);
+            sub_d( 2  + x, 0, i, y - 5  );
+            sub_d( 2  + x, 0, i, y - 4  );
+            sub_d( 10 + x, 0, i, y - 3 );
+            sub_d( 10 + x, 0, i, y - 2 );
+            sub_d( 11 + x, 0, i, y - 1 );
+            sub_d( 0     , 2 + x, i, y );
+        }
+    }
+
+    return 0;
 }
-MSH_CMD_EXPORT(mcurses_matrix_rain, screen demo)
+MSH_CMD_EXPORT(mcurses_matrix_rain, mcurses matrix rain demo)
 
 
 /*
@@ -135,5 +135,4 @@ COLOR p MOD 16, s MOD 16
 IF y > 0 AND y < 24 THEN LOCATE y, x: PRINT CHR$(33 + (x * y) MOD 200);
 END SUB
 */
- 
  

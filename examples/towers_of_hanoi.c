@@ -23,205 +23,202 @@ static uint8_t  hanoi_number_of_rings;
 // set_position: set position on pole
 void hanoi_set_position (uint8_t pole, uint8_t ring)
 {
-  uint8_t column;
-  uint8_t line;
+    uint8_t column;
+    uint8_t line;
 
-  column = pole * 20 - ring - 3;
-  line = hanoi_number_of_rings + 5 - hanoi_pole_height[pole - 1];
-  move (line, column);
+    column = pole * 20 - ring - 3;
+    line = hanoi_number_of_rings + 5 - hanoi_pole_height[pole - 1];
+    move (line, column);
 }
 
 // erase ring on pole
 void hanoi_erase_ring (uint8_t ring, uint8_t pole)
 {
-  uint8_t i;
-  hanoi_set_position (pole, ring + 1);
-  hanoi_pole_height[pole - 1]--;
+    uint8_t i;
+    hanoi_set_position (pole, ring + 1);
+    hanoi_pole_height[pole - 1]--;
 
-  i = ring + 3;
+    i = ring + 3;
 
-  while (i--)
-  {
-    addch (' ');
-  }
+    while (i--)
+    {
+      addch (' ');
+    }
 
-  if (hanoi_pole_height[pole - 1] - 1 == hanoi_number_of_rings)
-  {
-    addch (' ');
-  }
-  else
-  {
-    addch ('|');
-  }
+    if (hanoi_pole_height[pole - 1] - 1 == hanoi_number_of_rings)
+    {
+      addch (' ');
+    }
+    else
+    {
+      addch ('|');
+    }
 
-  i = ring + 3;
+    i = ring + 3;
 
-  while (i--)
-  {
-    addch (' ');
-  }
-
+    while (i--)
+    {
+      addch (' ');
+    }
 }
 
 // draw ring on pole
 void hanoi_draw_ring (uint8_t ring, uint8_t pole)
 {
-  uint8_t i;
+    uint8_t i;
 
-  hanoi_pole_height[pole - 1]++;
-  hanoi_set_position (pole, ring);
+    hanoi_pole_height[pole - 1]++;
+    hanoi_set_position (pole, ring);
 
-  i = 2 * ring + 5;
+    i = 2 * ring + 5;
 
-  while (i--)
-  {
-    addch ('-');
-  }
+    while (i--)
+    {
+      addch ('-');
+    }
 }
 
 
 // move ring from pole to pole
 void hanoi_move_ring (uint8_t ring, uint8_t from_pole, uint8_t to_pole)
 {
-  uint8_t height[3];
-  uint8_t h;
-  uint8_t i;
+    uint8_t height[3];
+    uint8_t h;
+    uint8_t i;
 
-  height[0] = hanoi_pole_height[0];
-  height[1] = hanoi_pole_height[1];
-  height[2] = hanoi_pole_height[2];
+    height[0] = hanoi_pole_height[0];
+    height[1] = hanoi_pole_height[1];
+    height[2] = hanoi_pole_height[2];
 
-  h = hanoi_number_of_rings - height[from_pole - 1] + 2;
+    h = hanoi_number_of_rings - height[from_pole - 1] + 2;
 
-  while (h)
-  {
-    hanoi_erase_ring (ring, from_pole);
-    move (3, 0);
-    rt_thread_mdelay (100);
-    hanoi_pole_height[from_pole - 1]++;
-    hanoi_draw_ring (ring, from_pole);
-    move (3, 0);
-    rt_thread_mdelay (100);
-    h--;
-  }
-
-  if (from_pole > to_pole)
-  {
-    for (i = 0; i < 20 * (from_pole - to_pole); i++)
+    while (h)
     {
-      mvdelch (3, 0);
-      rt_thread_mdelay (25);
+        hanoi_erase_ring (ring, from_pole);
+        move (3, 0);
+        rt_thread_mdelay (100);
+        hanoi_pole_height[from_pole - 1]++;
+        hanoi_draw_ring (ring, from_pole);
+        move (3, 0);
+        rt_thread_mdelay (100);
+        h--;
     }
-  }
-  else
-  {
-    for (i = 0; i < 20 * (to_pole - from_pole); i++)
+
+    if (from_pole > to_pole)
     {
-      mvinsch (3, 0, ' ');
-      rt_thread_mdelay (25);
+        for (i = 0; i < 20 * (from_pole - to_pole); i++)
+        {
+        mvdelch (3, 0);
+        rt_thread_mdelay (25);
+        }
     }
-  }
+    else
+    {
+        for (i = 0; i < 20 * (to_pole - from_pole); i++)
+        {
+        mvinsch (3, 0, ' ');
+        rt_thread_mdelay (25);
+        }
+    }
 
-  i = hanoi_number_of_rings - height[to_pole - 1] + 1;
-  hanoi_pole_height[to_pole - 1] = hanoi_number_of_rings + 1;
+    i = hanoi_number_of_rings - height[to_pole - 1] + 1;
+    hanoi_pole_height[to_pole - 1] = hanoi_number_of_rings + 1;
 
-  while (i)
-  {
+    while (i)
+    {
+        hanoi_draw_ring (ring, to_pole);
+        move (3, 0);
+        rt_thread_mdelay (100);
+        hanoi_erase_ring (ring, to_pole);
+        move (3, 0);
+        rt_thread_mdelay (100);
+        hanoi_pole_height[to_pole - 1]--;
+        i--;
+    }
+
     hanoi_draw_ring (ring, to_pole);
     move (3, 0);
     rt_thread_mdelay (100);
-    hanoi_erase_ring (ring, to_pole);
-    move (3, 0);
-    rt_thread_mdelay (100);
-    hanoi_pole_height[to_pole - 1]--;
-    i--;
-  }
 
-  hanoi_draw_ring (ring, to_pole);
-  move (3, 0);
-  rt_thread_mdelay (100);
-
-  hanoi_pole_height[from_pole - 1] = height[from_pole - 1] - 1;
-  hanoi_pole_height[to_pole   - 1] = height[to_pole   - 1] + 1;
+    hanoi_pole_height[from_pole - 1] = height[from_pole - 1] - 1;
+    hanoi_pole_height[to_pole   - 1] = height[to_pole   - 1] + 1;
 }
 
 void hanoi (uint8_t nrings, uint8_t n1, uint8_t n2, uint8_t n3)
 {
-  uint8_t n;
+    uint8_t n;
 
-  if (nrings == 0)
-  {
-    return;
-  }
+    if (nrings == 0)
+    {
+        return;
+    }
 
-  n = nrings - 1;
-  hanoi (n, n1, n3, n2);
-  hanoi_move_ring (n, n1, n2);
-  hanoi (n, n3, n2, n1);
+    n = nrings - 1;
+    hanoi (n, n1, n3, n2);
+    hanoi_move_ring (n, n1, n2);
+    hanoi (n, n3, n2, n1);
 }
 
 void hanoi_draw_poles (void)
 {
-  uint8_t ring;
-  uint8_t height_poles;
-  uint8_t h;
-  uint8_t i;
-  uint8_t j;
+    uint8_t ring;
+    uint8_t height_poles;
+    uint8_t h;
+    uint8_t i;
+    uint8_t j;
 
-  ring = hanoi_number_of_rings;
-  height_poles = 1 + hanoi_number_of_rings;
-  h = height_poles;
+    ring = hanoi_number_of_rings;
+    height_poles = 1 + hanoi_number_of_rings;
+    h = height_poles;
 
-  while (h--)
-  {
-    for (i = 0; i < 3; i++)
+    while (h--)
     {
-      mvaddch (h + 4, i * 20 + 19, '|');
-    }
-  }
-
-  move (height_poles + 4, 0);
-
-  for (i = 0; i < 4; i++)
-  {
-    for (j = 0; j < 19; j++)
-    {
-      addch ('-');
+        for (i = 0; i < 3; i++)
+        {
+        mvaddch (h + 4, i * 20 + 19, '|');
+        }
     }
 
-    if (i != 3)
-    {
-      addch ('^');
-    }
-  }
+    move (height_poles + 4, 0);
 
-  while (ring)
-  {
-    hanoi_draw_ring (ring, 1);
-    ring--;
-  }
+    for (i = 0; i < 4; i++)
+    {
+        for (j = 0; j < 19; j++)
+        {
+        addch ('-');
+        }
+
+        if (i != 3)
+        {
+        addch ('^');
+        }
+    }
+
+    while (ring)
+    {
+        hanoi_draw_ring (ring, 1);
+        ring--;
+    }
 }
 
 int mcurses_towers_of_hanoi(int argc, char const *argv[])
 {
-  setFunction_putchar(rtt_putchar); // tell the library which output channel shall be used
+    setFunction_putchar(rtt_putchar);   // tell the library which output channel shall be used
 
-  initscr();                  // initialize mcurses
+    initscr();                          // initialize mcurses
 
-  clear ();
-  hanoi_number_of_rings = 4;
-  hanoi_pole_height[0] = 0;
-  hanoi_pole_height[1] = 0;
-  hanoi_pole_height[2] = 0;
+    clear ();
+    hanoi_number_of_rings = 4;
+    hanoi_pole_height[0] = 0;
+    hanoi_pole_height[1] = 0;
+    hanoi_pole_height[2] = 0;
 
-  hanoi_draw_poles ();
-  hanoi (hanoi_number_of_rings, 1, 2, 3);
-  rt_thread_mdelay (1000);
+    hanoi_draw_poles ();
+    hanoi (hanoi_number_of_rings, 1, 2, 3);
+    rt_thread_mdelay (1000);
 
-  move(0, 0);
-  clear ();  
-  return 0;
+    move(0, 0);
+    clear ();  
+    return 0;
 }
-MSH_CMD_EXPORT(mcurses_towers_of_hanoi, screen demo)
-
-
+MSH_CMD_EXPORT(mcurses_towers_of_hanoi, mcurses towers of hanoi demo)

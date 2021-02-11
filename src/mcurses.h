@@ -14,17 +14,20 @@
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
 
-#ifdef __cplusplus
-extern "C"
-{
-	#endif
+#ifndef __MCURSES__
+#define __MCURSES__
 
-	#ifndef __MCURSES__
-	#define __MCURSES__
-	
+#include <rtthread.h>
 #include <stdint.h>
 
 #include "mcurses-config.h"
+
+#define PROGMEM
+#define pgm_read_byte(s)                        (*s)
+
+void rtt_putchar(uint_fast8_t c);
+void show_top_line_P (const char * str);
+void show_bottom_line_P (const char * str);
 
 /*---------------------------------------------------------------------------------------------------------------------------------------------------
  * some constants
@@ -87,7 +90,7 @@ extern uint_fast8_t             mcurses_curx;                                   
  * mcurses functions
  *---------------------------------------------------------------------------------------------------------------------------------------------------
  */
-void                     setFunction_putchar(void (*functionPoitner)(uint8_t ch));
+void                     setFunction_putchar(void (*functionPoitner)(uint_fast8_t ch));
 void                     setFunction_getchar(char (*functionPoitner)(void));
 uint_fast8_t             initscr (void);                                     // initialize mcurses
 void                     move (uint_fast8_t, uint_fast8_t);                  // move cursor to line, column (home = 0, 0)
@@ -191,8 +194,4 @@ void                     endwin (void);                                      // 
 
 
 	
-	#endif // __MCURSES__
-
-	#ifdef __cplusplus
-}
-#endif
+#endif // __MCURSES__
