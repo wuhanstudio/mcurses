@@ -2,6 +2,18 @@
 
 "mcurses" is a minimized version of programming library [ncurses](https://en.wikipedia.org/wiki/Ncurses) which gives GUI like interfaces on text terminal.
 
+![](./doc/mcurses_box_demo.gif)
+
+![](./doc/mcurses_matrix_rain.gif)
+
+![](./doc/mcurses_screen_demo.gif)
+
+![](./doc/mcurses_temperature_demo.gif)
+
+![](./doc/mcurses_towers_of_hanoi.gif)
+
+![](./doc/mcurses_hex_editor.gif)
+
 The library [mcurses](http://www.mikrocontroller.net/articles/MCURSES) was originally written by Frank M. for a number of microcontrollers.
 
 This version runs directly on Arduinos.
@@ -14,7 +26,7 @@ setFunction_putchar(Arduino_putchar); // tell the library which output channel s
 setFunction_getchar(Arduino_getchar); // tell the library which input channel shall be used  
 ```
 Please take a look into the examples to see how it is to be done exactly.
-  
+
 ## What do you need to use this Library?
 
 You need to install a **terminal programm** on your computer to visualize the characters sent and received by the serial line of your computer.
